@@ -22,6 +22,7 @@ import Pricing from "../components/ManagerComponents/Pricing/Pricing";
 import ManagerProfileUpdate from "../components/ManagerComponents/Profile/ManagerProfileUpdate";
 import EmployeeProfile from "../components/EmployeeComponents/Profile/EmployeeProfile";
 import EmployeeUpdateProfile from "../components/EmployeeComponents/Profile/EmployeeUpdateProfile";
+import Payment from "../components/Payment/Payment";
 
 const router = createBrowserRouter([
   {
@@ -72,7 +73,10 @@ const router = createBrowserRouter([
           {
             path: "profile-update",
             element: <ManagerProfileUpdate />,
-          },
+          },{
+            path: "payment",
+            element: <Payment />
+          }
         ],
       },
       {

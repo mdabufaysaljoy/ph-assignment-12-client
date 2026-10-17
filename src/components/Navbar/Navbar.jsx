@@ -3,11 +3,13 @@ import useAuth from "../../hooks/useAuth";
 import useEmployee from "./../../hooks/custom/useEmployee";
 import useManager from "../../hooks/custom/useManager";
 import Swal from "sweetalert2";
+import useUser from "../../hooks/custom/useUser";
 
 const Navbar = () => {
   const { user, loading, logout } = useAuth();
   const [isEmployee, isEmployeePending] = useEmployee();
   const [isManager, isManagerPending] = useManager();
+  const [currentUser] = useUser();
   // console.log("isManager: ",isManager, "isEmployee: ", isEmployee);
   const handleLogout = () => {
     Swal.fire({
@@ -201,7 +203,11 @@ const Navbar = () => {
           </ul>
         </div>
         <NavLink to="/" className="btn btn-ghost text-xl">
-          XYZ Corporation
+          {currentUser?.companyLogo ? (
+            <img src={currentUser?.companyLogo} alt="" width={50}/>
+          ) : (
+            "XYZ Corporation"
+          )}
         </NavLink>
       </div>
       <div className="navbar-center hidden lg:flex">

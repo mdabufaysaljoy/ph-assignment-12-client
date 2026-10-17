@@ -116,9 +116,7 @@ const Packages = () => {
               </span>
             </li>
           </ul>
-          <div className="mt-6">
-            <button className="btn btn-primary btn-block">Subscribe</button>
-          </div>
+       
         </div>
       </div>
          <div className="card w-96 bg-base-200 shadow-sm">
@@ -234,9 +232,7 @@ const Packages = () => {
               </span>
             </li>
           </ul>
-          <div className="mt-6">
-            <button className="btn btn-primary btn-block">Subscribe</button>
-          </div>
+       
         </div>
       </div>
          <div className="card w-96 bg-base-200 shadow-sm">
@@ -352,9 +348,7 @@ const Packages = () => {
               </span>
             </li>
           </ul>
-          <div className="mt-6">
-            <button className="btn btn-primary btn-block">Subscribe</button>
-          </div>
+       
         </div>
       </div>
    </div>

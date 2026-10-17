@@ -10,8 +10,10 @@ import {
 import Swal from "sweetalert2";
 import useAxiosPublic from "./useAxiosPublic";
 import auth from "../../firebase.config";
+// import useAxiosSecure from "./useAxiosSecure";
 const useAuth = () => {
   const axiosPublic = useAxiosPublic();
+  // const axiosSecure = useAxiosSecure();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const GoogleProvider = new GoogleAuthProvider();
@@ -54,7 +56,7 @@ const useAuth = () => {
           Swal.fire({
             title: "error when create user in db",
             icon: "error",
-            desc: error.message,
+         
             timer: 3000,
           });
         }
@@ -63,7 +65,7 @@ const useAuth = () => {
       console.log(error.message);
       Swal.fire({
         title: "error when createuser in google",
-        desc: error.message,
+     
         icon: "error",
         timer: 3000,
       });
@@ -114,22 +116,32 @@ const useAuth = () => {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       if (res.user) {
-        const response = await axiosPublic.post("/api/user", {
-          email,
-        });
+      try {
+          const response = await axiosPublic.post(`/api/user/login`,{email});
         if (response.data.success) {
+          console.log(response.data);
           Swal.fire({
-            title: response.data.message,
+            title: "Login Success",
             icon: "success",
-            timer: 1000,
+            timer: 3000,
           });
         }
+      } catch (error) {
+        console.log(error.message);
+         Swal.fire({
+        title: "error while database login",
+     
+        icon: "error",
+        timer: 3000,
+      });
+      }
       }
     } catch (error) {
+      console.log(error.message);
       Swal.fire({
-        title: error.message,
+        title: "error while google login",
         icon: "error",
-        timer: 1000,
+        timer: 3000,
       });
     }
   };

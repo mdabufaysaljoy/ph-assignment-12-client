@@ -4,6 +4,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { Link } from "react-router-dom";
 
 const Bannar = () => {
     const slides = [
@@ -12,22 +13,20 @@ const Bannar = () => {
       image:
         "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
       title: "Welcome To Our Website",
-      description: "Build modern websites with React and SwiperJS",
+      description: "Manage your Assets Smartly",
+      buttonText: "Join as HR",
+      path: "join-as-manager"
     },
     {
       id: 2,
       image:
         "https://images.unsplash.com/photo-1493246507139-91e8fad9978e",
-      title: "Creative Design",
-      description: "Make your UI smooth and professional",
+      title: "Employee?",
+      description: "Create your account or login",
+      buttonText: "Join as Employee",
+      path: "/join-as-employee"
     },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
-      title: "Fast Performance",
-      description: "Responsive and user friendly experience",
-    },
+   
   ];
 
   return (
@@ -64,9 +63,9 @@ const Bannar = () => {
                   {slide.description}
                 </p>
 
-                <button className="mt-6 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold duration-300">
-                  Explore More
-                </button>
+                <Link to={slide.path} className="mt-6 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold duration-300">
+                 {slide.buttonText}
+                </Link>
               </div>
             </div>
           </SwiperSlide>

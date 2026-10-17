@@ -1,66 +1,40 @@
-const products = [
-  {
-    productName: "Dell Laptop",
-    productType: "Electronics",
-    productQuantity: 15,
-    dateAdded: "2026-05-01",
-  },
-  {
-    productName: "Office Chair",
-    productType: "Furniture",
-    productQuantity: 25,
-    dateAdded: "2026-05-03",
-  },
-  {
-    productName: "Wireless Mouse",
-    productType: "Accessories",
-    productQuantity: 50,
-    dateAdded: "2026-05-05",
-  },
-  {
-    productName: "Mechanical Keyboard",
-    productType: "Accessories",
-    productQuantity: 30,
-    dateAdded: "2026-05-07",
-  },
-  {
-    productName: "HP Monitor",
-    productType: "Electronics",
-    productQuantity: 12,
-    dateAdded: "2026-05-10",
-  },
-  {
-    productName: "Printer Paper",
-    productType: "Stationery",
-    productQuantity: 200,
-    dateAdded: "2026-05-12",
-  },
-  {
-    productName: "USB Flash Drive",
-    productType: "Storage",
-    productQuantity: 75,
-    dateAdded: "2026-05-15",
-  },
-  {
-    productName: "Projector",
-    productType: "Electronics",
-    productQuantity: 5,
-    dateAdded: "2026-05-18",
-  },
-  {
-    productName: "Notebook",
-    productType: "Stationery",
-    productQuantity: 100,
-    dateAdded: "2026-05-20",
-  },
-  {
-    productName: "Desk Lamp",
-    productType: "Furniture",
-    productQuantity: 20,
-    dateAdded: "2026-05-22",
-  },
-];
+import Swal from "sweetalert2";
+import useAssetList from "../../../hooks/custom/useAssetList";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+
+
 const List = () => {
+  const [assetList,isAssetLoading,refetch] = useAssetList();
+  const axiosSecure = useAxiosSecure();
+  const handleDelete = async(id)=>{
+    // console.log(id);
+    Swal.fire({
+  title: "Do you want to Delete the Asset?",
+  showDenyButton: true,
+  confirmButtonText: "Yes",
+  denyButtonText: `No`
+}).then(async(result) => {
+  /* Read more about isConfirmed, isDenied below */
+  try {
+  if (result.isConfirmed){
+      const res = await axiosSecure.delete(`/api/asset/delete/${id}`);
+      // console.log(res.data);
+      if(res.data?.success){
+        Swal.fire({
+          title: res.data.message,
+          icon: "success",
+          timer: 3000
+        })
+        refetch();
+      }
+    } else if (result.isDenied) Swal.fire("Not Deleted", "", "info");
+  } catch (error) {
+    console.log(error.message);
+  }
+ 
+});
+  }
+  // console.log(assetList,isAssetLoading);
   return (
     <>
       <h2 className="text-3xl font-bold text-center">Asset List</h2>
@@ -98,7 +72,26 @@ const List = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product, idx) => (
+            {
+              isAssetLoading? <tr className="loading loading-xl"></tr> :
+              assetList.map((asset,idx)=>(
+                    <tr key={idx}>
+                <td>{idx + 1}</td>
+                <td>{asset.name}</td>
+                <td>{asset.type}</td>
+                <td>{asset.quantity}</td>
+                <td>{asset.date}</td>
+                <td>
+                    <button className="btn btn-info">Update</button>
+                </td>
+                <td>
+                    <button onClick={()=>handleDelete(asset._id)} className="btn btn-error">Delete</button>
+                </td>
+                
+              </tr>
+              ))
+            }
+            {/* {products.map((product, idx) => (
               <tr key={idx}>
                 <td>{idx + 1}</td>
                 <td>{product.productName}</td>
@@ -113,7 +106,7 @@ const List = () => {
                 </td>
                 
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       </div>

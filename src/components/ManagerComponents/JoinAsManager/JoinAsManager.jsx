@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const JoinAsManager = () => {
   const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
+  const [isSubmitting,setIsSubmitting] = useState(false);
   const { handleEmailPassowrdSignup, user, loading, googleLoginAndSignup } =
     useAuth();
   const api_key = import.meta.env.VITE_IMGBB_API_KEY;
@@ -23,10 +26,12 @@ const JoinAsManager = () => {
       </div>
     );
   }
-  if (user) {
+
+  if (user && !isSubmitting) {
     return <Navigate to="/" />;
   }
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     const {
       companyLogo,
       companyName,
@@ -59,7 +64,11 @@ const JoinAsManager = () => {
         };
 
         handleEmailPassowrdSignup(uploadDoc);
+        console.log("before navigate line");
+        navigate("/manager/payment",{replace:true,state: {packages}});
+        
       }
+     
     } catch (error) {
       console.log(error.message);
       Swal.fire({
@@ -68,6 +77,8 @@ const JoinAsManager = () => {
         message: error.message,
         timer: 1500,
       });
+    }finally{
+      setIsSubmitting(false);
     }
   };
   const handleGoogleLogin = () => {
@@ -258,8 +269,8 @@ const JoinAsManager = () => {
                 <span>$15 package</span>
               </label>
             </div>
-            {errors.package && (
-              <p className="text-red-500 mt-1">{errors.package.message}</p>
+            {errors.packages && (
+              <p className="text-red-500 mt-1">{errors.packages.message}</p>
             )}
           </div>
           <input type="submit" className="btn btn-neutral mt-4 w-full" />
