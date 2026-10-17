@@ -201,7 +201,7 @@ const Navbar = () => {
           </ul>
         </div>
         <NavLink to="/" className="btn btn-ghost text-xl">
-          daisyUI
+          XYZ Corporation
         </NavLink>
       </div>
       <div className="navbar-center hidden lg:flex">

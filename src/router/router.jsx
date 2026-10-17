@@ -10,7 +10,7 @@ import Employee from "../components/EmployeeComponents/Employee/Employee";
 import ManagerRoute from "../components/ManagerComponents/ManagerRoute/ManagerRoute";
 import Manager from "../components/ManagerComponents/Manager/Manager";
 import AssetList from "../components/ManagerComponents/AssetList/AssetList";
-import Profile from "../components/Profile/Profile";
+import ManagerProfile from "../components/ManagerComponents/Profile/ManagerProfile";
 import MyTeam from "../components/EmployeeComponents/MyTeam/MyTeam";
 import RequestForAnAsset from "../components/EmployeeComponents/RequestForAnAsset/RequestForAnAsset";
 import AddAnEmployee from "../components/ManagerComponents/AddAnEmployee/AddAnEmployee";
@@ -19,7 +19,9 @@ import AddAnAsset from "../components/ManagerComponents/AddAnAsset/AddAnAsset";
 import MyEmployeeList from "../components/ManagerComponents/MyEmployeeList/MyEmployeeList";
 import JoinAsManager from "./../components/ManagerComponents/JoinAsManager/JoinAsManager";
 import Pricing from "../components/ManagerComponents/Pricing/Pricing";
-import ProfileUpdate from "../components/Profile/ProfileUpdate";
+import ManagerProfileUpdate from "../components/ManagerComponents/Profile/ManagerProfileUpdate";
+import EmployeeProfile from "../components/EmployeeComponents/Profile/EmployeeProfile";
+import EmployeeUpdateProfile from "../components/EmployeeComponents/Profile/EmployeeUpdateProfile";
 
 const router = createBrowserRouter([
   {
@@ -45,7 +47,7 @@ const router = createBrowserRouter([
           },
           {
             path: "profile",
-            element: <Profile />,
+            element: <ManagerProfile />,
           },
           {
             path: "add-an-employee",
@@ -69,7 +71,7 @@ const router = createBrowserRouter([
           },
           {
             path: "profile-update",
-            element: <ProfileUpdate />,
+            element: <ManagerProfileUpdate />,
           },
         ],
       },
@@ -87,7 +89,11 @@ const router = createBrowserRouter([
           },
           {
             path: "profile",
-            element: <Profile />,
+            element: <EmployeeProfile />,
+          },
+          {
+            path: "profile-update",
+            element: <EmployeeUpdateProfile />,
           },
           {
             path: "my-team",
@@ -96,10 +102,6 @@ const router = createBrowserRouter([
           {
             path: "request-for-an-asset",
             element: <RequestForAnAsset />,
-          },
-          {
-            path: "profile-update",
-            element: <ProfileUpdate />,
           },
         ],
       },

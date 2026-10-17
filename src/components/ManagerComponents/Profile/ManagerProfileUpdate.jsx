@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import useUser from "../../hooks/custom/useUser";
+import useUser from "../../../hooks/custom/useUser";
 import { useForm } from "react-hook-form";
 
 const ProfileUpdate = () => {

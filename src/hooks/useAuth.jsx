@@ -30,30 +30,42 @@ const useAuth = () => {
     try {
       const gRes = await createUserWithEmailAndPassword(auth, email, password);
       if (gRes.user) {
-        const res = await axiosPublic.post("/api/user", {
-          companyLogo,
-          companyName,
-          name,
-          email,
-          dateOfBirth,
-          packages,
-          role,
-        });
-        if (res.data.success) {
-          console.log(res.data.data);
+        try {
+          const res = await axiosPublic.post("/api/user/register", {
+            companyLogo,
+            companyName,
+            name,
+            email,
+            dateOfBirth,
+            packages,
+            role,
+          });
+         
+          if (res.data.success) {
+            // console.log(res.data.data);
+            Swal.fire({
+              title: "Success",
+              icon: "success",
+              timer: 3000,
+            });
+          }
+        } catch (error) {
+          console.log(error.message);
           Swal.fire({
-            title: "Success",
-            icon: "success",
-            timer: 1000,
+            title: "error when create user in db",
+            icon: "error",
+            desc: error.message,
+            timer: 3000,
           });
         }
       }
     } catch (error) {
       console.log(error.message);
       Swal.fire({
-        title: error.message,
+        title: "error when createuser in google",
+        desc: error.message,
         icon: "error",
-        timer: 1000,
+        timer: 3000,
       });
     }
   };

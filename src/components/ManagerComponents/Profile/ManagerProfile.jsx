@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useUser from "../../hooks/custom/useUser";
+import useUser from "../../../hooks/custom/useUser";
 
 const Profile = () => {
   const [currentUser] = useUser();
@@ -22,7 +22,7 @@ const Profile = () => {
                 </div>
               </div>
               <h3 className="mt-4 text-3xl font-bold">
-                Company Name: {currentUser?.companyName || "N/A"}
+               {currentUser?.companyName || "N/A"}
               </h3>
             </>
           )}
@@ -36,7 +36,7 @@ const Profile = () => {
             </h4>
             <h4 className="text-xl font-bold">Email: {currentUser?.email}</h4>
             <h4 className="text-xl font-bold">
-              Package: {currentUser?.package || "N/A"}
+              Package: ${currentUser?.packages || "N/A"}
             </h4>
             <h4 className="text-xl font-bold">
               Date Of Birth: {currentUser?.dateOfBirth || "N/A"}
