@@ -6,3 +6,4 @@
     - User Saved in database
     - Only Manager can add update and delete assets
     - manager must pay for creating account
+    - asset information update
