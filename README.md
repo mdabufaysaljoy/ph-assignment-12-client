@@ -7,3 +7,5 @@
     - Only Manager can add update and delete assets
     - manager must pay for creating account
     - asset information update
+    - asset filtering through search and availability and return type 
+    - asset sort on ascending and descending based on quantity

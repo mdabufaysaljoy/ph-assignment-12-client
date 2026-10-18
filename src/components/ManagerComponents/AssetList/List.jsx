@@ -1,162 +1,231 @@
-import Swal from "sweetalert2";
-import useAssetList from "../../../hooks/custom/useAssetList";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import { useState } from "react";
 
-const List = () => {
-  const [assetList, isAssetLoading, refetch] = useAssetList();
+import { useState } from "react";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+
+const List = ({ assetList, isAssetLoading, refetch }) => {
   const axiosSecure = useAxiosSecure();
-  const [assetObj,setAssetObj] = useState(null);
+
+  const [assetObj, setAssetObj] = useState(null);
   const [assetName, setAssetName] = useState("");
   const [assetType, setAssetType] = useState("");
   const [assetQuantity, setAssetQuantity] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleDelete = async (id) => {
-    // console.log(id);
-    Swal.fire({
-      title: "Do you want to Delete the Asset?",
-      showDenyButton: true,
-      confirmButtonText: "Yes",
-      denyButtonText: `No`,
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      try {
-        if (result.isConfirmed) {
-          const res = await axiosSecure.delete(`/api/asset/delete/${id}`);
-          // console.log(res.data);
-          if (res.data?.success) {
-            Swal.fire({
-              title: res.data.message,
-              icon: "success",
-              timer: 3000,
-            });
-            refetch();
-          }
-        } else if (result.isDenied) Swal.fire("Not Deleted", "", "info");
-      } catch (error) {
-        console.log(error.message);
-      }
-    });
-  };
-
+  // Open update modal with selected asset values
   const handleUpdateAsset = (asset) => {
     setAssetObj(asset);
     setAssetName(asset.name);
     setAssetType(asset.type);
-    setAssetQuantity(asset.quantity);
-    document.getElementById("my_modal_5").showModal();
+    setAssetQuantity(String(asset.quantity));
+
+    document.getElementById("my_modal_5")?.showModal();
+  };
+
+  // Delete asset
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Do you want to delete this asset?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await axiosSecure.delete(
+        `/api/asset/delete/${id}`
+      );
+
+      if (res.data?.success) {
+        await Swal.fire({
+          title: "Asset deleted successfully",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        refetch();
+      } else {
+        Swal.fire({
+          title: "Delete failed",
+          text: res.data?.message || "Could not delete asset.",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Delete failed",
+        text:
+          error.response?.data?.message || error.message,
+        icon: "error",
+      });
+    }
+  };
+
+  // Update asset
+  const handleSubmitUpdate = async (e) => {
+    e.preventDefault();
+
+    if (!assetObj) return;
+
+    setIsUpdating(true);
+
+    const updatedAsset = {
+      productName: assetName.trim(),
+      productType: assetType,
+      quantity: Number(assetQuantity),
+      date: assetObj.date,
+    };
+
+    try {
+      const res = await axiosSecure.put(
+        `/api/asset/update/${assetObj._id}`,
+        updatedAsset
+      );
+
+      if (res.data?.success) {
+        document.getElementById("my_modal_5")?.close();
+
+        await Swal.fire({
+          title: "Asset updated successfully",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        refetch();
+      } else {
+        Swal.fire({
+          title: "Update failed",
+          text: res.data?.message || "Could not update asset.",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Update failed",
+        text:
+          error.response?.data?.message || error.message,
+        icon: "error",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
     <>
-      <h2 className="text-3xl font-bold text-center">Asset List</h2>
-      <div className="divider m-0"></div>
-      <div className="flex justify-between gap-4 mt-6">
-        <select defaultValue="Availability" className="select  outline-none">
-          <option disabled={true}>Availability</option>
-          <option>Available</option>
-          <option>Out Of Stock</option>
-        </select>
-        <select defaultValue="Asset Type" className="select outline-none">
-          <option disabled={true}>Asset Type</option>
-          <option>Returnable</option>
-          <option>Non-Returnable</option>
-        </select>
-        <select defaultValue="Sort by Quantity" className="select outline-none">
-          <option disabled={true}>Sort by Quantity</option>
-          <option>Ascending</option>
-          <option>Descending</option>
-        </select>
-      </div>
-      {/* Open the modal using document.getElementById('ID').showModal() method */}
+      <h2 className="mt-8 text-center text-3xl font-bold">
+        Asset List
+      </h2>
 
-      <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+      <div className="divider m-0" />
+
+      {/* Update modal */}
+      <dialog
+        id="my_modal_5"
+        className="modal modal-bottom sm:modal-middle"
+      >
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Update Asset</h3>
-          <p className="pb-4 text-xs">
-            Press ESC key or click the button below to close
-          </p>
-          <div className="modal-action justify-center">
-            <form
-              method="dialog"
-              className="w-full flex flex-col gap-4"
-              onSubmit={async(e) => {
-                e.preventDefault();
-                const updatedAsset = {
-                  productName: assetName,
-                  quantity: assetQuantity,
-                  productType: assetType,
-                  date: new Date().toLocaleDateString(),
-                };
-                // console.log(updatedAsset);
+          <h3 className="text-lg font-bold">Update Asset</h3>
 
-                try {
-                  const res = await axiosSecure.put(`/api/asset/update/${assetObj._id}`,updatedAsset);
-                  if(res.data?.success){
-                    Swal.fire({
-                      title: "Asset Update Success",
-                      icon: "success",
-                      timer:3000
-                    })
-                  }
-                } catch (error) {
-                  console.log(error.message);
+          <form
+            className="mt-6 flex w-full flex-col gap-4"
+            onSubmit={handleSubmitUpdate}
+          >
+            {/* Product name */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="productName">Product Name:</label>
+
+              <input
+                type="text"
+                className="input w-full"
+                name="productName"
+                id="productName"
+                value={assetName}
+                onChange={(e) => setAssetName(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* Quantity */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="assetQuantity">Quantity:</label>
+
+              <input
+                type="number"
+                className="input w-full"
+                name="assetQuantity"
+                id="assetQuantity"
+                value={assetQuantity}
+                onChange={(e) =>
+                  setAssetQuantity(e.target.value)
                 }
-                refetch();
-                document.getElementById("my_modal_5").close();
-              }}
-            >
-              <div className="w-full flex flex-col gap-2">
-                <label htmlFor="productName">Name:</label>
-                <input
-                  type="text"
-                  className="input"
-                  name="productName"
-                  id="productName"
-                  value={assetName}
-                  onChange={(e) => setAssetName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="w-full flex flex-col gap-2">
-                <label htmlFor="assetQuantity">Quantity:</label>
-                <input
-                  type="Number"
-                  className="input"
-                  name="assetQuantity"
-                  id="assetQuantity"
-                  value={assetQuantity}
-                  onChange={(e) => setAssetQuantity(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="w-full flex flex-col gap-2">
-                <label htmlFor="productType">Type:</label>
-                <select
-                  name="productType"
-                  id="productType"
-                  value={assetType}
-                  className="select"
-                  onChange={(e) => setAssetType(e.target.value)}
-                  required
-                >
-                  <option value="Select Return Type" disabled>
-                    Select Return Type
-                  </option>
-                  <option value="Returnable">Returnable</option>
-                  <option value="Non-Returnable">Non-Returnable</option>
-                </select>
-                {/* <input type="text" className="input" name="productType" id="productType" value={assetName} onChange={(e)=>setAssetName(e.target.value)} /> */}
-              </div>
-              <button className="btn btn-success">Update</button>
-            </form>
-          </div>
+                min="0"
+                step="1"
+                required
+              />
+            </div>
+
+            {/* Asset type */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="productType">Asset Type:</label>
+
+              <select
+                name="productType"
+                id="productType"
+                className="select w-full"
+                value={assetType}
+                onChange={(e) => setAssetType(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Select Return Type
+                </option>
+                <option value="Returnable">
+                  Returnable
+                </option>
+                <option value="Non-Returnable">
+                  Non-Returnable
+                </option>
+              </select>
+            </div>
+
+            {/* Modal actions */}
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn"
+                disabled={isUpdating}
+                onClick={() =>
+                  document.getElementById("my_modal_5")?.close()
+                }
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="btn btn-success"
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </dialog>
 
-      <div className="overflow-auto h-screen rounded-box border border-base-content/10 bg-base-100 mt-10">
+      {/* Assets table */}
+      <div className="mt-10 h-screen overflow-auto rounded-box border border-base-content/10 bg-base-100">
         <table className="table">
-          {/* head */}
           <thead>
             <tr>
               <th>#</th>
@@ -168,17 +237,29 @@ const List = () => {
               <th>Delete</th>
             </tr>
           </thead>
+
           <tbody>
             {isAssetLoading ? (
-              <tr className="loading loading-xl"></tr>
+              <tr>
+                <td colSpan={7} className="py-10 text-center">
+                  <span className="loading loading-spinner loading-lg" />
+                </td>
+              </tr>
+            ) : assetList.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="py-10 text-center">
+                  No assets found.
+                </td>
+              </tr>
             ) : (
               assetList.map((asset, idx) => (
-                <tr key={idx}>
+                <tr key={asset._id}>
                   <td>{idx + 1}</td>
                   <td>{asset.name}</td>
                   <td>{asset.type}</td>
                   <td>{asset.quantity}</td>
                   <td>{asset.date}</td>
+
                   <td>
                     <button
                       className="btn btn-info"
@@ -187,10 +268,11 @@ const List = () => {
                       Update
                     </button>
                   </td>
+
                   <td>
                     <button
-                      onClick={() => handleDelete(asset._id)}
                       className="btn btn-error"
+                      onClick={() => handleDelete(asset._id)}
                     >
                       Delete
                     </button>
