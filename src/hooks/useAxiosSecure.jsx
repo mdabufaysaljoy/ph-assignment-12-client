@@ -3,7 +3,7 @@ import useAuth from "./useAuth";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:3030",
+  baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:3030",
 });
 const useAxiosSecure = () => {
   const { logout } = useAuth();
